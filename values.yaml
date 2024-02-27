@@ -1,0 +1,45 @@
+global:
+  staticReplicaCount:
+    dev: 1
+    sit: 1
+    uat: 1
+    prd: 3
+
+  acrDir: <project_name>
+  acrRepository:
+    dev: acrsharesvcnonprodeas01.azurecr.io
+    sit: acrsharesvcnonprodeas01.azurecr.io
+    uat: acrsharesvcnonprodeas01.azurecr.io
+    prd: acrsharesvcprodeas01.azurecr.io
+    all: acrsharesvcnonprodeas01.azurecr.io
+
+  envVars:
+    <project_name>GeneralServiceApi:
+      SAMPLE_KEY_1: 
+        dev: sample-dev-value
+        sit: sample-sit-value
+        uat: sample-uat-value
+        prd: sample-prd-value
+      SAMPLE_KEY_2: 
+        all: sample-all-value
+
+
+  ingress:
+    projectnameServicenameServiceApi:
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /<project_name>/api/<service_name>service/$1    
+      tlsEnabled: 
+        dev: false
+        sit: false
+        uat: false
+        prd: true
+      host: 
+        dev: apim-sharesvc-dev-apim-eas-01.azure-api.net        
+        sit: apim-sharesvc-dev-apim-eas-01.azure-api.net
+        uat: uat.net
+        prd: prd.net
+      path: 
+        dev: apim-sharesvc-dev-apim-eas-01.azure-api.net        
+        sit: /<project_name>-sit/api/<service_name>service/(.*)
+        uat: /<project_name>-uat/<service_name>service/(.*)
+        prd: /<project_name>-prd/<service_name>service/(.*)

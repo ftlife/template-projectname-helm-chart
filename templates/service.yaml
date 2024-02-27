@@ -1,0 +1,31 @@
+
+
+{{/*
+Default Template for Service. All Sub-Charts under this Chart can include the below template.
+*/}}
+{{- define "parent-chart.service-template" }}
+{{- $templateName := .Chart.Name | kebabcase  -}}
+{{- $myImageTag := "" -}}
+{{ if hasKey .Values.global.imageTags $templateName }}
+{{- $myImageTag = get .Values.global.imageTags $templateName -}}
+{{- end }}
+{{- if hasKey .Values.global.imageTags "all" }}
+{{- if eq (get .Values.global.imageTags $templateName)  "general" }}
+{{- $myImageTag = get .Values.global.imageTags "all" -}}
+{{- end }}
+{{- end }}
+{{- if ne $myImageTag "" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $templateName }}-svc
+spec:
+  type: ClusterIP
+  ports:
+    - name: {{ $templateName }}
+      port: {{ if hasKey .Values "service" }}{{ .Values.service.port }}{{ else }}80{{ end }}
+      targetPort: {{ if hasKey .Values "service" }}{{ .Values.service.targetPort }}{{ else }}8080{{ end }}
+  selector:
+    app: {{ $templateName }}   
+        {{- end }}
+        {{- end }}

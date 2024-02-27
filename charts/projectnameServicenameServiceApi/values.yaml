@@ -1,0 +1,8 @@
+container:
+  otherSpec:
+    ports:
+      - containerPort: 8080
+    envFrom:
+    - configMapRef: 
+        name: <project_name>-general-service-api-cm            
+

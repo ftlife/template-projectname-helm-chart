@@ -1,0 +1,36 @@
+{{/*
+Default Template for configMap. All Sub-Charts under this Chart can include the below template.
+*/}}
+{{- define "parent-chart.configmap-template" }}
+{{- $templateName := .Chart.Name | kebabcase  -}}
+{{- $myImageTag := "" -}}
+{{ if hasKey .Values.global.imageTags $templateName }}
+{{- $myImageTag = get .Values.global.imageTags $templateName -}}
+{{- end }}
+{{- if hasKey .Values.global.imageTags "all" }}
+{{- if eq (get .Values.global.imageTags $templateName)  "general" }}
+{{- $myImageTag = get .Values.global.imageTags "all" -}}
+{{- end }}
+{{- end }}
+{{- if ne $myImageTag "" }}
+{{- $scopeVars := get $.Values.global.envVars .Chart.Name -}}
+{{- $envValue := "" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    environment: {{ $.Values.global.env }}
+  name: {{ $templateName }}-cm
+data:  
+  {{- range $scopeVars | keys | sortAlpha }}
+  {{- $scopeValues := get $scopeVars . -}}
+  {{- if hasKey $scopeValues $.Values.global.env }}
+    {{- $envValue = get $scopeValues $.Values.global.env -}}
+  {{- else }}
+    {{- $envValue = get $scopeValues "all" -}}
+  {{- end }}  
+  {{ . }}: {{ $envValue | quote }}
+  {{- end }}
+        {{- end }}
+        {{- end }}
+

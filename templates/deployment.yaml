@@ -1,0 +1,70 @@
+{{/*
+Default Template for Deployment. All Sub-Charts under this Chart can include the below template.
+*/}}
+{{- define "parent-chart.deployment-template" }}
+{{- $templateName := .Chart.Name | kebabcase  -}}
+{{- $myImageTag := "" -}}
+{{ if hasKey .Values.global.imageTags $templateName }}
+{{- $myImageTag = get .Values.global.imageTags $templateName -}}
+{{- end }}
+{{- if hasKey .Values.global.imageTags "all" }}
+{{- if eq (get .Values.global.imageTags $templateName)  "general" }}
+{{- $myImageTag = get .Values.global.imageTags "all" -}}
+{{- end }}
+{{- end }}
+{{- if ne $myImageTag "" }}
+
+
+  {{- $acrRepository:= .Values.global.acrRepository -}}
+  {{- $envAcrRepository:= "" -}}
+  {{- if hasKey $acrRepository $.Values.global.env }}
+    {{- $envAcrRepository = get $acrRepository $.Values.global.env -}}
+  {{- else }}
+    {{- $envAcrRepository = get $acrRepository "all" -}}
+  {{- end }}    
+
+  {{- $staticReplicaCount:= .Values.global.staticReplicaCount -}}
+  {{- $envStaticReplicaCount:= "" -}}
+  {{- if hasKey $staticReplicaCount $.Values.global.env }}
+    {{- $envStaticReplicaCount = get $staticReplicaCount $.Values.global.env -}}
+  {{- else }}
+    {{- $envStaticReplicaCount = get $staticReplicaCount "all" -}}
+  {{- end }}    
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $templateName }}
+  labels:
+    {{- include "project.labels" . | nindent 4 }}
+spec:
+  replicas: {{ $envStaticReplicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $templateName }}
+      {{- include "project.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: {{ $templateName }}
+        {{- include "project.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ $templateName }}
+          {{- if hasKey .Values "command" }}
+            {{- toYaml .Values.command | nindent 10 }}
+          {{- end }}
+          image: "{{$envAcrRepository}}/{{ .Values.global.acrDir }}/{{ .Chart.Name | kebabcase }}:{{ $myImageTag }}"
+          {{- $imagePullPolicy := "Always" -}}
+          {{- if hasKey .Values "imagePullPolicy" }}
+            {{- $imagePullPolicy = .Values.imagePullPolicy }}
+          {{- end }}
+          imagePullPolicy: {{ $imagePullPolicy }}
+          {{- if and (hasKey .Values "container") (hasKey .Values.container "otherSpec") }}
+            {{- toYaml .Values.container.otherSpec | nindent 10 }}
+          {{- end }}
+        {{- if hasKey .Values "volumeSpec" }}
+          {{- toYaml .Values.volumeSpec | nindent 6 }}    
+          {{- end }}
+        {{- end }}
+        {{- end }}

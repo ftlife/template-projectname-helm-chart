@@ -1,0 +1,65 @@
+{{/*
+Default Template for Ingress. All Sub-Charts under this Chart can include the below template.
+*/}}
+{{- define "parent-chart.ingress-template" }}
+{{- $templateName := .Chart.Name | kebabcase  -}}
+{{- $myImageTag := "" -}}
+{{ if hasKey .Values.global.imageTags $templateName }}
+{{- $myImageTag = get .Values.global.imageTags $templateName -}}
+{{- end }}
+{{- if hasKey .Values.global.imageTags "all" }}
+{{- if eq (get .Values.global.imageTags $templateName)  "general" }}
+{{- $myImageTag = get .Values.global.imageTags "all" -}}
+{{- end }}
+{{- end }}
+{{- if ne $myImageTag "" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  {{- if hasKey (get .Values.global.ingress .Chart.Name) "annotations" }}
+  annotations:
+  {{- toYaml (get (get .Values.global.ingress .Chart.Name) "annotations") | nindent 4 }}
+  {{- end }}      
+  name: {{ $templateName }}-ing
+  {{- $host:= get (get .Values.global.ingress .Chart.Name) "host" -}}
+  {{- $path:= get (get .Values.global.ingress .Chart.Name) "path" -}}
+  {{- $tlsEnabled:= get (get .Values.global.ingress .Chart.Name) "tlsEnabled" -}}
+  {{- $envHost:= "" -}}
+  {{- $envPath:= "" -}}
+  {{- $envTlsEnabled:= "" -}}
+  
+  {{- if hasKey $host $.Values.global.env }}
+    {{- $envHost = get $host $.Values.global.env -}}
+  {{- else }}
+    {{- $envHost = get $host "all" -}}
+  {{- end }}    
+  {{- if hasKey $path $.Values.global.env }}
+    {{- $envPath = get $path $.Values.global.env -}}
+  {{- else }}
+    {{- $envPath = get $path "all" -}}
+  {{- end }}     
+  {{- if hasKey $tlsEnabled $.Values.global.env }}
+    {{- $envTlsEnabled = get $tlsEnabled $.Values.global.env -}}
+  {{- else }}
+    {{- $envTlsEnabled = get $tlsEnabled "all" -}}
+  {{- end }}         
+spec:
+  ingressClassName: external-nginx
+{{- if eq $envTlsEnabled true}}  
+  tls:
+    - hosts:
+      - {{$envHost}}
+{{- end}}      
+  rules:
+    - host: {{$envHost}}
+      http:
+        paths:
+          - pathType: Prefix
+            path: {{$envPath}}
+            backend:
+              service:
+                name: {{ $templateName }}-svc
+                port:
+                  number: {{ if hasKey .Values "service" }}{{ .Values.service.port }}{{ else }}80{{ end }}
+        {{- end }}
+        {{- end }}
