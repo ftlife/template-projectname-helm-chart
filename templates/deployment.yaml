@@ -54,7 +54,11 @@ spec:
           {{- if hasKey .Values "command" }}
             {{- toYaml .Values.command | nindent 10 }}
           {{- end }}
+          {{- if hasKey .Values.global "acrGeneralImage" }}   
+          image: "{{$envAcrRepository}}/{{ .Values.global.acrDir }}/{{ .Values.global.acrGeneralImage }}:{{ $myImageTag }}"
+          {{- else }}
           image: "{{$envAcrRepository}}/{{ .Values.global.acrDir }}/{{ .Chart.Name | kebabcase }}:{{ $myImageTag }}"
+          {{- end }}                
           {{- $imagePullPolicy := "Always" -}}
           {{- if hasKey .Values "imagePullPolicy" }}
             {{- $imagePullPolicy = .Values.imagePullPolicy }}
