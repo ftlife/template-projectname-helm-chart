@@ -1,1 +1,1 @@
-# sample-helm-chart
+# projectname-helm-chart

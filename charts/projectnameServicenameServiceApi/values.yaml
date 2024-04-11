@@ -4,5 +4,5 @@ container:
       - containerPort: 8080
     envFrom:
     - configMapRef: 
-        name: <project_name>-general-service-api-cm            
+        name: projectname-general-service-api-cm            
 

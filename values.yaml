@@ -5,7 +5,7 @@ global:
     uat: 1
     prd: 3
 
-  acrDir: <project_name>
+  acrDir: projectname
   acrRepository:
     dev: acrsharesvcnonprodeas01.azurecr.io
     sit: acrsharesvcnonprodeas01.azurecr.io
@@ -14,7 +14,7 @@ global:
     all: acrsharesvcnonprodeas01.azurecr.io
 
   envVars:
-    <project_name>GeneralServiceApi:
+    projectnameGeneralServiceApi:
       SAMPLE_KEY_1: 
         dev: sample-dev-value
         sit: sample-sit-value
@@ -27,19 +27,19 @@ global:
   ingress:
     projectnameServicenameServiceApi:
       annotations:
-        nginx.ingress.kubernetes.io/rewrite-target: /<project_name>/api/<service_name>service/$1    
+        nginx.ingress.kubernetes.io/rewrite-target: /projectname/api/<service_name>service/$1    
       tlsEnabled: 
         dev: false
         sit: false
         uat: false
         prd: true
       host: 
-        dev: apim-sharesvc-dev-apim-eas-01.azure-api.net        
-        sit: apim-sharesvc-dev-apim-eas-01.azure-api.net
-        uat: uat.net
-        prd: prd.net
+        dev: clientelaksdev01-vip.interconnect.systems        
+        sit: clientelaksdev01-vip.interconnect.systems
+        uat: clientelaksdev01-vip.interconnect.systems
+        prd: apisprd.interconnect.systems
       path: 
-        dev: apim-sharesvc-dev-apim-eas-01.azure-api.net        
-        sit: /<project_name>-sit/api/<service_name>service/(.*)
-        uat: /<project_name>-uat/<service_name>service/(.*)
-        prd: /<project_name>-prd/<service_name>service/(.*)
+        dev: /projectname-sit/api/<service_name>service/(.*)    
+        sit: /projectname-sit/api/<service_name>service/(.*)
+        uat: /projectname-uat/<service_name>service/(.*)
+        prd: /projectname-prd/<service_name>service/(.*)
