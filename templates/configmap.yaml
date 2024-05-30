@@ -18,9 +18,9 @@ Default Template for configMap. All Sub-Charts under this Chart can include the 
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  labels:
-    environment: {{ $.Values.global.env }}
   name: {{ $templateName }}-cm
+  labels:
+    {{- include "project.labels" . | nindent 4 }}  
 data:  
   {{- range $scopeVars | keys | sortAlpha }}
   {{- $scopeValues := get $scopeVars . -}}

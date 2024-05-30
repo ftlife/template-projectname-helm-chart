@@ -30,6 +30,5 @@ helm.sh/chart: {{ include "project.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/environment: {{ $.Values.global.env }}
 {{- end }}
-
-

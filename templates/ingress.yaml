@@ -21,6 +21,8 @@ metadata:
   {{- toYaml (get (get .Values.global.ingress .Chart.Name) "annotations") | nindent 4 }}
   {{- end }}      
   name: {{ $templateName }}-ing
+  labels:
+    {{- include "project.labels" . | nindent 4 }}  
   {{- $host:= get (get .Values.global.ingress .Chart.Name) "host" -}}
   {{- $path:= get (get .Values.global.ingress .Chart.Name) "path" -}}
   {{- $tlsEnabled:= get (get .Values.global.ingress .Chart.Name) "tlsEnabled" -}}
@@ -54,7 +56,7 @@ spec:
     - host: {{$envHost}}
       http:
         paths:
-          - pathType: Prefix
+          - pathType: ImplementationSpecific
             path: {{$envPath}}
             backend:
               service:
