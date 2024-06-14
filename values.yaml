@@ -39,7 +39,7 @@ global:
         uat: clientelaksdev01-vip.interconnect.systems
         prd: apisprd.interconnect.systems
       path: 
-        dev: /projectname-sit/api/<service_name>service/(.*)    
+        dev: /projectname-dev/api/<service_name>service/(.*)    
         sit: /projectname-sit/api/<service_name>service/(.*)
-        uat: /projectname-uat/api/<service_name>service/(.*)
-        prd: /projectname-prd/api/<service_name>service/(.*)
+        uat: /projectname/api/<service_name>service/(.*)
+        prd: /projectname/api/<service_name>service/(.*)
