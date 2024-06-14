@@ -27,7 +27,7 @@ global:
   ingress:
     projectnameServicenameServiceApi:
       annotations:
-        nginx.ingress.kubernetes.io/rewrite-target: /projectname/api/<service_name>service/$1    
+        nginx.ingress.kubernetes.io/rewrite-target: /$1    
       tlsEnabled: 
         dev: false
         sit: false
@@ -41,5 +41,5 @@ global:
       path: 
         dev: /projectname-sit/api/<service_name>service/(.*)    
         sit: /projectname-sit/api/<service_name>service/(.*)
-        uat: /projectname-uat/<service_name>service/(.*)
-        prd: /projectname-prd/<service_name>service/(.*)
+        uat: /projectname-uat/api/<service_name>service/(.*)
+        prd: /projectname-prd/api/<service_name>service/(.*)
