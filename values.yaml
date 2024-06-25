@@ -22,6 +22,14 @@ global:
         prd: sample-prd-value
       SAMPLE_KEY_2: 
         all: sample-all-value
+      azure_key_vault_url_client_id:
+        sit: 64ff3abc-5962-4f9d-9301-1e1ea8f7d0ca
+        uat: 64ff3abc-5962-4f9d-9301-1e1ea8f7d0ca
+        prd: ffabdea5-5d59-4774-91fd-b98e3bbe4f03
+      azure_key_vault_url:
+        sit: "https://***.vault.azure.net/"
+        uat: "https://***.vault.azure.net/"
+        prd: "https://***.vault.azure.net/"
 
 
   ingress:
