@@ -14,25 +14,27 @@ Default Template for Deployment. All Sub-Charts under this Chart can include the
 {{- end }}
 {{- if ne $myImageTag "" }}
 
+{{/* Define acrRepository base on global.env */}}
+{{- $acrRepository:= .Values.global.acrRepository -}}
+{{- $envAcrRepository:= "" -}}
+{{- if hasKey $acrRepository $.Values.global.env }}
+  {{- $envAcrRepository = get $acrRepository $.Values.global.env -}}
+{{- else }}
+  {{- $envAcrRepository = get $acrRepository "all" -}}
+{{- end }}    
 
-  {{- $acrRepository:= .Values.global.acrRepository -}}
-  {{- $envAcrRepository:= "" -}}
-  {{- if hasKey $acrRepository $.Values.global.env }}
-    {{- $envAcrRepository = get $acrRepository $.Values.global.env -}}
-  {{- else }}
-    {{- $envAcrRepository = get $acrRepository "all" -}}
-  {{- end }}    
+{{/* Define staticReplicaCount base on global.env */}}
+{{- $staticReplicaCount:= .Values.global.staticReplicaCount -}}
+{{- $envStaticReplicaCount:= "" -}}
+{{- if hasKey $staticReplicaCount $.Values.global.env }}
+  {{- $envStaticReplicaCount = get $staticReplicaCount $.Values.global.env -}}
+{{- else }}
+  {{- $envStaticReplicaCount = get $staticReplicaCount "all" -}}
+{{- end }}    
 
-  {{- $staticReplicaCount:= .Values.global.staticReplicaCount -}}
-  {{- $envStaticReplicaCount:= "" -}}
-  {{- if hasKey $staticReplicaCount $.Values.global.env }}
-    {{- $envStaticReplicaCount = get $staticReplicaCount $.Values.global.env -}}
-  {{- else }}
-    {{- $envStaticReplicaCount = get $staticReplicaCount "all" -}}
-  {{- end }}    
 
-{{- if eq .Values.global.env  "prd" }}
-  {{ if hasKey .Values.global.specificPrdReplicaCount .Chart.Name }}
+{{ if hasKey .Values.global.specificPrdReplicaCount .Chart.Name }}
+  {{- if eq .Values.global.env  "prd" }}
     {{- $envStaticReplicaCount = get .Values.global.specificPrdReplicaCount .Chart.Name -}}
   {{- end }}
 {{- end }}
@@ -55,11 +57,20 @@ spec:
         app: {{ $templateName }}
         {{- include "project.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if and (hasKey .Values "spec") (hasKey .Values.global "secretProviderClass") }}
+      volumes:
+        - name: akv-spc
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "akv-spc"
+      {{- end }}    
       containers:
         - name: {{ $templateName }}
           {{- if hasKey .Values "command" }}
             {{- toYaml .Values.command | nindent 10 }}
-          {{- end }}
+          {{- end }}             
           {{- if hasKey .Values.global "acrGeneralImage" }}   
           image: "{{$envAcrRepository}}/{{ .Values.global.acrDir }}/{{ .Values.global.acrGeneralImage }}:{{ $myImageTag }}"
           {{- else }}
