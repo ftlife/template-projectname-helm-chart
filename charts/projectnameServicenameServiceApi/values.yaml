@@ -1,8 +1,16 @@
 container:
   otherSpec:
-    ports:
-      - containerPort: 8080
     envFrom:
     - configMapRef: 
-        name: projectname-general-service-api-cm            
-
+        name: projectname-general-service-api-cm      
+    ports:
+      - containerPort: 8080    
+        name: http
+        protocol: TCP        
+    resources:   
+      requests:
+        cpu: 100m
+        memory: 1024Mi
+      limits:
+        cpu: 2
+        memory: 2048Mi   
