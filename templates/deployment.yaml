@@ -33,11 +33,12 @@ Default Template for Deployment. All Sub-Charts under this Chart can include the
 {{- end }}    
 
 
-{{ if hasKey .Values.global.specificPrdReplicaCount .Chart.Name }}
-  {{- if eq .Values.global.env  "prd" }}
+{{ if hasKey .Values.global "specificPrdReplicaCount" }}
+  {{- if and ( hasKey .Values.global.specificPrdReplicaCount .Chart.Name ) ( eq .Values.global.env  "prd" ) }}
     {{- $envStaticReplicaCount = get .Values.global.specificPrdReplicaCount .Chart.Name -}}
   {{- end }}
 {{- end }}
+
 
 apiVersion: apps/v1
 kind: Deployment
