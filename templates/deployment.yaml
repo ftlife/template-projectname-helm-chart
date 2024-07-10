@@ -44,6 +44,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ $templateName }}
+  annotations:
+    reloader.stakater.com/auto: "true"
   labels:
     {{- include "project.labels" . | nindent 4 }}
 spec:
